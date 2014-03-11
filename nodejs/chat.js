@@ -15,6 +15,7 @@ io.configure(function(){
     io.set('authorization', function(data, accept){
         if(data.headers.cookie){
             data.cookie = cookie_reader.parse(data.headers.cookie);
+            console.log(data.cookie)
             return accept(null, true);
         }
         return accept('error', false);

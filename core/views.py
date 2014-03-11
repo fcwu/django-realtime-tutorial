@@ -7,9 +7,11 @@ from django.contrib.sessions.models import Session
 from django.contrib.auth.decorators import login_required
 
 import redis
+import logging
 
 @login_required
 def home(request):
+    logging.info('sql statements!')
     comments = Comments.objects.select_related().all()[0:100]
     return render(request, 'index.html', locals())
 
@@ -23,11 +25,11 @@ def node_api(request):
 
         #Create comment
         Comments.objects.create(user=user, text=request.POST.get('comment'))
-        
+
         #Once comment has been created post it to the chat channel
         r = redis.StrictRedis(host='localhost', port=6379, db=0)
         r.publish('chat', user.username + ': ' + request.POST.get('comment'))
-        
+
         return HttpResponse("Everything worked :)")
     except Exception, e:
         return HttpResponseServerError(str(e))
